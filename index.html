@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy Birthday To XHX</title>
+  <meta name="description" content="生日祝福" />
+  <style>
+    :root {
+      --bg-1: #ffafbd;
+      --bg-2: #ffc3a0;
+      --text: #222222;
+      --white: #ffffff;
+      --shadow: rgba(0,0,0,0.15);
+      --accent: #ff5f6d;
+      --accent-2: #ffc371;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      background-size: 200% 200%;
+      animation: bg-move 16s ease-in-out infinite;
+      display: grid;
+      place-items: center;
+    }
+
+    @keyframes bg-move {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    main {
+      width: min(880px, 92vw);
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(6px);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px var(--shadow);
+      padding: 40px 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(34px, 6vw, 60px);
+      line-height: 1.1;
+      background: linear-gradient(90deg, #ff5f6d, #ffc371);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    h2 {
+      margin: 0 0 22px;
+      font-weight: 600;
+      font-size: clamp(18px, 2.5vw, 22px);
+      color: #5a5a5a;
+    }
+
+    p {
+      margin: 10px 0;
+      font-size: clamp(16px, 2.4vw, 18px);
+      color: #444;
+    }
+
+    .actions {
+      margin-top: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      appearance: none;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: var(--white);
+      box-shadow: 0 8px 18px rgba(255,95,109,0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .button:active { transform: translateY(1px) scale(0.99); }
+    .button:hover { box-shadow: 0 10px 20px rgba(255,95,109,0.45); }
+
+    .tag {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.8);
+      color: #7a7a7a;
+      font-size: 13px;
+    }
+
+    /* 许愿池 */
+    .pool {
+      position: relative;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(120px 100px at 50% 40%, rgba(255,255,255,0.9), rgba(255,255,255,0.6) 40%, rgba(255,255,255,0.35) 60%, rgba(255,255,255,0.2) 75%, rgba(255,255,255,0.05) 100%),
+                  radial-gradient(60% 60% at 50% 50%, #9be7ff, #6bd3ff 45%, #3fb2ff 80%);
+      box-shadow: inset 0 8px 18px rgba(0,0,0,0.08), 0 16px 30px rgba(0,0,0,0.15);
+      overflow: hidden;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.15s ease;
+    }
+
+    .pool:active { transform: scale(0.98); }
+
+    .pool::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(80% 70% at 50% 40%, rgba(255,255,255,0.35), transparent 60%);
+      mix-blend-mode: screen;
+      animation: shimmer 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: translateY(0px); opacity: 0.9; }
+      50% { transform: translateY(6px); opacity: 0.75; }
+    }
+
+    .hint {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #6b6b6b;
+    }
+
+    /* 点击水波 */
+    .ripple {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.9);
+      transform: translate(-50%, -50%);
+      opacity: 0.9;
+      animation: ripple 900ms ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes ripple {
+      0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.9; }
+      100% { transform: translate(-50%, -50%) scale(6); opacity: 0; }
+    }
+
+    /* 生日蛋糕（SVG 进入动画） */
+    #cakeSvg {
+      position: absolute;
+      width: 70%;
+      left: 50%;
+      bottom: 16%;
+      transform: translateX(-50%) translateY(16px) scale(0.9);
+      opacity: 0;
+      animation: riseIn 900ms cubic-bezier(.2,.7,.2,1) forwards;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.15));
+    }
+
+    @keyframes riseIn {
+      0% { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.85); }
+      100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+    }
+
+    /* 火焰特效 */
+    #cakeSvg .flame {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: flamePulse 1.8s ease-in-out infinite, flameFlicker 140ms infinite steps(2, end);
+      filter: url(#flameGlow);
+    }
+
+    @keyframes flamePulse {
+      0% { transform: scale(0.93); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(0.93); }
+    }
+
+    @keyframes flameFlicker {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(-0.6px) scale(1.02, 0.98); }
+    }
+
+    #cakeSvg .spark {
+      fill: #ffd166;
+      opacity: 0.95;
+      animation: sparkRise 1.6s linear infinite;
+      filter: url(#flameGlow);
+    }
+
+    @keyframes sparkRise {
+      0% { transform: translateY(0) scale(1); opacity: 0.95; }
+      70% { opacity: 0.9; }
+      100% { transform: translateY(-22px) scale(0.6); opacity: 0; }
+    }
+
+    footer {
+      margin-top: 28px;
+      font-size: 13px;
+      color: #7a7a7a;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="tag">祝你今天与众不同 ✨</div>
+    <h1>生日快乐！</h1>
+    <h2>温柔漂亮善良的许美女，在这个特别的日子，还是想真诚地为你送上祝福：</h2>
+    <p>感谢曾经的时光。真心祝愿你：往后的日子一切顺心，身体健康，笑容常驻，继续勇敢地追逐自己的梦想，还有钞票多多。生日快乐，愿你拥有闪闪发光的一年！</p>
+
+    <div class="actions" style="flex-direction: column; gap: 8px;">
+      <div class="pool" id="wishPool" aria-label="许愿池" title="点击许愿池"></div>
+      <div class="hint">点击许愿池，出现生日蛋糕 🎂</div>
+    </div>
+
+    <footer>来自：FanFan👦🏻</footer>
+  </main>
+
+  <script>
+    (function () {
+      const pool = document.getElementById("wishPool");
+
+      function createCakeSvg() {
+        const ns = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(ns, "svg");
+        svg.setAttribute("id", "cakeSvg");
+        svg.setAttribute("viewBox", "0 0 200 200");
+
+        // 盘子
+        const plate = document.createElementNS(ns, "ellipse");
+        plate.setAttribute("cx", "100");
+        plate.setAttribute("cy", "160");
+        plate.setAttribute("rx", "70");
+        plate.setAttribute("ry", "14");
+        plate.setAttribute("fill", "#f2f2f2");
+        plate.setAttribute("stroke", "#e3e3e3");
+        svg.appendChild(plate);
+
+        // 蛋糕底层
+        const base = document.createElementNS(ns, "rect");
+        base.setAttribute("x", "40");
+        base.setAttribute("y", "110");
+        base.setAttribute("width", "120");
+        base.setAttribute("height", "40");
+        base.setAttribute("rx", "10");
+        base.setAttribute("fill", "#ffb6c1");
+        svg.appendChild(base);
+
+        // 底层阴影
+        const baseShadow = document.createElementNS(ns, "rect");
+        baseShadow.setAttribute("x", "40");
+        baseShadow.setAttribute("y", "130");
+        baseShadow.setAttribute("width", "120");
+        baseShadow.setAttribute("height", "6");
+        baseShadow.setAttribute("rx", "3");
+        baseShadow.setAttribute("fill", "#f59eb0");
+        svg.appendChild(baseShadow);
+
+        // 奶油滴边
+        for (let i = 0; i < 8; i++) {
+          const drop = document.createElementNS(ns, "circle");
+          drop.setAttribute("cx", String(55 + i * 15));
+          drop.setAttribute("cy", String(150));
+          drop.setAttribute("r", "6");
+          drop.setAttribute("fill", "#fff");
+          svg.appendChild(drop);
+        }
+
+        // 上层
+        const top = document.createElementNS(ns, "rect");
+        top.setAttribute("x", "65");
+        top.setAttribute("y", "80");
+        top.setAttribute("width", "70");
+        top.setAttribute("height", "35");
+        top.setAttribute("rx", "8");
+        top.setAttribute("fill", "#ffe1a8");
+        svg.appendChild(top);
+
+        // 顶部奶油
+        const cream = document.createElementNS(ns, "path");
+        cream.setAttribute("d", "M65 95 C80 110, 120 110, 135 95 L135 88 L65 88 Z");
+        cream.setAttribute("fill", "#ffffff");
+        svg.appendChild(cream);
+
+        // 蜡烛
+        const candle = document.createElementNS(ns, "rect");
+        candle.setAttribute("x", "98");
+        candle.setAttribute("y", "58");
+        candle.setAttribute("width", "4");
+        candle.setAttribute("height", "22");
+        candle.setAttribute("fill", "#7f00ff");
+        svg.appendChild(candle);
+
+        // 火焰发光与渐变
+        const defs = document.createElementNS(ns, "defs");
+        // glow filter
+        const filter = document.createElementNS(ns, "filter");
+        filter.setAttribute("id", "flameGlow");
+        const blur = document.createElementNS(ns, "feGaussianBlur");
+        blur.setAttribute("stdDeviation", "3");
+        blur.setAttribute("result", "coloredBlur");
+        filter.appendChild(blur);
+        const merge = document.createElementNS(ns, "feMerge");
+        const mn1 = document.createElementNS(ns, "feMergeNode");
+        mn1.setAttribute("in", "coloredBlur");
+        const mn2 = document.createElementNS(ns, "feMergeNode");
+        mn2.setAttribute("in", "SourceGraphic");
+        merge.appendChild(mn1);
+        merge.appendChild(mn2);
+        filter.appendChild(merge);
+
+        // gradients
+        const gOuter = document.createElementNS(ns, "radialGradient");
+        gOuter.setAttribute("id", "gOuter");
+        gOuter.setAttribute("cx", "50%");
+        gOuter.setAttribute("cy", "50%");
+        gOuter.setAttribute("r", "50%");
+        const gOuterS1 = document.createElementNS(ns, "stop");
+        gOuterS1.setAttribute("offset", "0%");
+        gOuterS1.setAttribute("stop-color", "#fff7b1");
+        gOuterS1.setAttribute("stop-opacity", "1");
+        const gOuterS2 = document.createElementNS(ns, "stop");
+        gOuterS2.setAttribute("offset", "60%");
+        gOuterS2.setAttribute("stop-color", "#ffb347");
+        gOuterS2.setAttribute("stop-opacity", "0.85");
+        const gOuterS3 = document.createElementNS(ns, "stop");
+        gOuterS3.setAttribute("offset", "100%");
+        gOuterS3.setAttribute("stop-color", "#ff5f6d");
+        gOuterS3.setAttribute("stop-opacity", "0");
+        gOuter.appendChild(gOuterS1);
+        gOuter.appendChild(gOuterS2);
+        gOuter.appendChild(gOuterS3);
+
+        const gInner = document.createElementNS(ns, "radialGradient");
+        gInner.setAttribute("id", "gInner");
+        const gInnerS1 = document.createElementNS(ns, "stop");
+        gInnerS1.setAttribute("offset", "0%");
+        gInnerS1.setAttribute("stop-color", "#fff3a0");
+        const gInnerS2 = document.createElementNS(ns, "stop");
+        gInnerS2.setAttribute("offset", "100%");
+        gInnerS2.setAttribute("stop-color", "#ff8a00");
+        gInnerS2.setAttribute("stop-opacity", "0.9");
+        gInner.appendChild(gInnerS1);
+        gInner.appendChild(gInnerS2);
+
+        const gCore = document.createElementNS(ns, "radialGradient");
+        gCore.setAttribute("id", "gCore");
+        const gCoreS1 = document.createElementNS(ns, "stop");
+        gCoreS1.setAttribute("offset", "0%");
+        gCoreS1.setAttribute("stop-color", "#ffffff");
+        const gCoreS2 = document.createElementNS(ns, "stop");
+        gCoreS2.setAttribute("offset", "100%");
+        gCoreS2.setAttribute("stop-color", "#fff0a6");
+        gCore.appendChild(gCoreS1);
+        gCore.appendChild(gCoreS2);
+
+        defs.appendChild(filter);
+        defs.appendChild(gOuter);
+        defs.appendChild(gInner);
+        defs.appendChild(gCore);
+        svg.appendChild(defs);
+
+        const flameGroup = document.createElementNS(ns, "g");
+        flameGroup.setAttribute("class", "flame");
+
+        // 更大的火团（三层）
+        const outer = document.createElementNS(ns, "circle");
+        outer.setAttribute("cx", "100");
+        outer.setAttribute("cy", "56");
+        outer.setAttribute("r", "18");
+        outer.setAttribute("fill", "url(#gOuter)");
+        outer.setAttribute("opacity", "0.9");
+        flameGroup.appendChild(outer);
+
+        const inner = document.createElementNS(ns, "circle");
+        inner.setAttribute("cx", "100");
+        inner.setAttribute("cy", "56");
+        inner.setAttribute("r", "12");
+        inner.setAttribute("fill", "url(#gInner)");
+        flameGroup.appendChild(inner);
+
+        const core = document.createElementNS(ns, "circle");
+        core.setAttribute("cx", "100");
+        core.setAttribute("cy", "56");
+        core.setAttribute("r", "7");
+        core.setAttribute("fill", "url(#gCore)");
+        flameGroup.appendChild(core);
+
+        // 轮廓形状增强“火焰感”
+        const flameShape = document.createElementNS(ns, "path");
+        flameShape.setAttribute("d", "M100 44 C90 58, 96 62, 100 66 C104 62, 110 58, 100 44 Z");
+        flameShape.setAttribute("fill", "url(#gInner)");
+        flameShape.setAttribute("opacity", "0.9");
+        flameGroup.appendChild(flameShape);
+
+        // 少量火花
+        for (let i = 0; i < 6; i++) {
+          const s = document.createElementNS(ns, "circle");
+          s.setAttribute("class", "spark");
+          const dx = (Math.random() - 0.5) * 6; // -3..3
+          const r = 1.2 + Math.random() * 1.2;
+          s.setAttribute("cx", String(100 + dx));
+          s.setAttribute("cy", String(54 + Math.random() * 4));
+          s.setAttribute("r", String(r));
+          s.style.animationDelay = `${(Math.random() * 1.2).toFixed(2)}s`;
+          s.style.animationDuration = `${(1.2 + Math.random() * 1.2).toFixed(2)}s`;
+          flameGroup.appendChild(s);
+        }
+
+        svg.appendChild(flameGroup);
+
+        return svg;
+      }
+
+      function addRipple(x, y) {
+        const r = document.createElement("span");
+        r.className = "ripple";
+        const rect = pool.getBoundingClientRect();
+        r.style.setProperty("--x", `${x - rect.left}px`);
+        r.style.setProperty("--y", `${y - rect.top}px`);
+        pool.appendChild(r);
+        r.addEventListener("animationend", () => r.remove());
+      }
+
+      function showCakeAtClick(event) {
+        addRipple(event.clientX, event.clientY);
+
+        const existed = document.getElementById("cakeSvg");
+        if (existed) {
+          // 重新触发进入动画
+          existed.style.animation = "none";
+          // 强制重绘
+          void existed.offsetWidth;
+          existed.style.animation = "riseIn 900ms cubic-bezier(.2,.7,.2,1) forwards";
+          return;
+        }
+        const cake = createCakeSvg();
+        pool.appendChild(cake);
+      }
+
+      pool.addEventListener("click", showCakeAtClick);
+    })();
+  </script>
+</body>
+</html>
+
+
